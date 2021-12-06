@@ -1,6 +1,9 @@
 from django.db import models
 from django.urls import reverse
 import uuid
+from django.contrib.auth.models import User
+from datetime import date
+
 
 # Create your models here.
 class Genre(models.Model):
@@ -74,9 +77,19 @@ class BookInstance(models.Model):
     )
 
     status = models.CharField(max_length=1, choices=LOAN_STATUS, blank=True, default='m', help_text="Book's available status")
+    borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    @property
+    def is_overdue(self):
+        if self.due_back and date.today() > self.due_back:
+            return True
+        return False
+
 
     class Meta:
         ordering = ['due_back', 'book']
+
+        permissions = (('can_mark_returned', 'Set book as returned'),)  # Must have a comma at the end
 
         # Model metadata is to control  control the default ordering of records returned
         #  when you query the model type. Symbol (-) is to reverse the sorting order.
@@ -84,6 +97,7 @@ class BookInstance(models.Model):
         # the books would be sorted alphabetically by title, from A-Z
         # and then by publication date inside each title, from newest to oldest.
 
+    
     def __str__(self):
         """String for representing the Model object"""
         return f'{self.id} - ({self.book.title})'
