@@ -11,6 +11,8 @@ from django.urls import reverse
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
+from catalog import models
+
 # Create your views here.
 def index(request):
     """View function for home page of site."""
@@ -130,4 +132,19 @@ class AuthorDelete(DeleteView):
     model = Author
     success_url = reverse_lazy('authors')
     # The AuthorDelete class doesn't need to display any of the fields, so these don't need to be specified.
-    # You do however need to specify the success_url, because there is no obvious default value for Django to use. In this case
+    # You do however need to specify the success_url, because there is no obvious default value for Django to use.
+
+
+# Generic editing views for Book
+class BookCreate(CreateView):
+    model = Book
+    fields = '__all__'
+
+
+class BookUpdate(UpdateView):
+    model = Book
+    fields = '__all__'
+
+class BookDelete(DeleteView):
+    model = Book
+    success_url = reverse_lazy('books')
